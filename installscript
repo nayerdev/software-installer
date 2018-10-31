@@ -1,0 +1,248 @@
+#!/bin/bash
+# Forked  respin respun forked stolen and modified by  Nayer ben Salah
+# Tested Ubuntu 18.04 LTS 
+# Forked and spooned from some forum post I can no longer find in a galaxy of the internet
+# Version 1.4
+
+if [[ $EUID -ne 0 ]]; then
+   	echo "This script must be run as root type: sudo ./installscript" 
+   	exit 1
+else
+	#Update and Upgrade
+	echo "Updating and Upgrading"
+	apt-get update && sudo apt-get upgrade -y
+
+	sudo apt-get install dialog
+	cmd=(dialog --separate-output --checklist "Please Select Software you want to install:")
+	options=($ "Install Flatpak Repository" off
+			 $#  "Install Snaps Repository" off
+			 1 "Sublime Text" off    # any option can be set to default to "on"
+	         2 "leafpad" off
+	         3 "Filezilla" off
+	         4 "Telegram (SNAP)" off
+	         5 "Ubuntu Restricted Extras" off
+	         6 "Google Chrome" off
+	         7 "Firefox Browser" off
+	         8 "GIMP" off
+	         9 "OBS-Studio" off
+	         10 "Kdenlive" off
+			 11 "Virtualbox" off
+			 12 "Atom" off
+			 13 "Putty" off
+			 14 "Steam (Valve)" off
+			 15 "Lutris" off
+			 16 "Audacity" off
+			 17 "Guvcview (webcam settings)" off
+			 18 "Discord (Snap)" off
+			 19 "Etcher" off
+			 20 "Tilix" off
+			 21 "neofetch" off
+			 22 "gparted" off
+			 23 "synaptic" off
+			 24 "htop" off
+			 25 "flashplayer" off
+			 26 "Pycharm Pro (Pycharm Tools SNAP)" off
+			 27 "Post Install Auto Clean Up & Update" off)
+		choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+		clear
+		for choice in $choices
+		do
+		    case $choice in
+	        $)	
+				#Install Flatpak Repository
+				echo "Installing Flatpak Repository"
+				sudo apt install flatpak -y
+				;;
+
+			$#)	
+				#Install Snap Repository
+				echo "Installing Snap Repository"
+				sudo apt install snapd -y
+				;;
+
+
+	        1)
+	            #Install Sublime Text
+				echo "Installing Sublime Text"
+				wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+				sudo apt-get install apt-transport-https
+				echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+				sudo apt update
+				sudo apt install sublime-text -y
+				;;
+    		3)	
+				#Install leafpad
+				echo "leafpad"
+				apt install leafpad -y
+				;;
+			4)
+				#Filezilla
+				echo "Filezilla not related to Godzilla"
+				apt install filezilla -y
+				;;
+			
+			5)
+               #Telegram
+				echo "Telegram Snap"
+				sudo apt install snapd
+				sudo snap install telegram-desktop
+				;;
+			6)
+				#Ubuntu Restricted Extras
+				echo "Installing Ubuntu Restricted Extras"
+				apt install ubuntu-restricted-extras -y
+				;;
+			
+			7)
+				#Chrome
+				echo "Installing Google Chrome"
+				wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+				sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+				apt-get update 
+				apt-get install google-chrome-stable -y
+				;;
+	
+			8)
+				#Firefox Browser
+				echo "Firefox"
+				apt install firefox -y
+
+				;;
+			9)
+
+				#GIMP
+				echo "Installing GIMP"
+				apt install gimp -y
+				;;
+			10)
+				#OBS Studio
+				echo "Installing OBS Studio"
+				sudo apt-get install ffmpeg -y
+				sudo add-apt-repository ppa:obsproject/obs-studio
+ 				sudo apt-get update && sudo apt-get install obs-studio -y
+				;;
+			
+			11)
+				#Kdenlive
+				echo "Kdenlive"
+				apt-get install kdenlive -y
+				apt-get install breeze-icon-theme -y
+				apt-get install vlc -y
+				;;
+	
+			12)	#Virtualbox
+				echo "Installing Virtualbox"
+				sudo apt install virtualbox -y
+				;;
+
+			13)	#Atom
+				echo "Installing Atom"				
+				cd ~/Downloads			
+				wget -O atom-amd64.deb https://atom.io/download/deb			
+				dpkg -i atom-amd64.deb
+				apt-get install -f -y
+				rm -rf atom-amd64.deb
+				apm install atom-html-preview
+				;;
+
+			14)	#Putty
+				echo "Putty"
+				apt install putty -y
+				;;
+
+			15)	#Steam
+				echo "Installing Steam"				
+				apt install steam -y
+				;;
+
+			16)	#Lutris
+				echo "Installing Lutris"
+				ver=$(lsb_release -sr); if [ $ver != "17.10" -a $ver != "17.04" -a $ver != "16.04" ]; then ver=16.04; fi
+				echo "deb http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/ ./" | sudo tee /etc/apt/sources.list.d/lutris.list
+				wget -q http://download.opensuse.org/repositories/home:/strycore/xUbuntu_$ver/Release.key -O- | sudo apt-key add -
+				sudo apt-get update
+				sudo apt-get install lutris -y
+				;;
+
+
+			17) #Audacity
+				echo "installing Audacity"
+				apt install audacity -y
+				;;
+
+			18) #Guvcview
+				echo "installing Guvcview"
+				apt install libgsl2 -y
+				apt install libguvcview-1.1-1 -y
+				apt install guvcview -y
+				;;
+
+			19)
+				#Discord
+				sudo apt install snapd
+				sudo snap install discord
+				;;
+
+			20) #Etcher ISO Creator
+				echo "Installing Etcher"
+				cd ~/Downloads
+				wget -O etcher.zip https://github.com/resin-io/etcher/releases/download/v1.4.4/etcher-electron-1.4.4-linux-x64.zip	
+				sudo apt install unzip -y
+				unzip etcher*.zip
+				chmod +x ~/Downloads/etcher-*.AppImage
+				;;
+
+                21) #Tilix (Tiling Terminal)
+                echo "Installing Tilix"
+                apt install tilix -y
+                ;;
+                
+                22) #neofetch
+                echo "Installing neofetch"
+                apt install neofetch -y
+                ;;
+                
+                23) #gparted
+                echo "Installing gparted"
+                apt install gparted -y
+                ;;
+                
+                 24) #synaptic
+                echo "Installing synaptic"
+                apt install synaptic -y
+                ;;
+                 25) #htop
+                echo "Installing htop"
+                apt install htop -y
+                ;;
+                 26) #flashplayer
+                echo "Installing flashplayer"
+                apt install flashplugin-installer pepperflashplugin-nonfree -y
+                ;;
+        
+			27) #Python Tools (Dev Testing)
+				echo "Installing Python Tools"
+				#Install PIP
+				sudo apt-get install -y python3-pip
+				#Install packages and dev tools
+				sudo apt-get install build-essential libssl-dev libffi-dev python-dev -y
+				#Pycharm 
+				apt install openjdk-8-jdk -y
+				apt install python3-setuptools -y
+				#Install SNAP
+				sudo apt install snapd -y
+				sudo snap install pycharm-professional
+				;;
+
+			28) #Clean up
+				echo "Running Clean Up And Update"
+				sudo apt update
+				sudo apt upgrade
+				sudo apt-get autoremove
+				;;
+
+
+	    esac
+	done
+fi
+
